@@ -144,6 +144,72 @@ Help the user understand their financial behavior over a month — not just what
 
 ---
 
+## 6. Data Management
+
+**Goal**
+Let the user permanently remove transaction history they no longer need, by month, by year, or all at once, so they aren't forced to retain data indefinitely on a fully offline device with no cloud backup.
+
+**Acceptance Criteria**
+- User can reach the Data Management screen from the app's side navigation drawer (see §7 App Navigation Drawer).
+- The screen lists the years (and months within each year) that contain at least one transaction.
+- User can select a single month and delete every transaction dated within that month.
+- User can select a single year and delete every transaction dated within that year, in one action.
+- User can trigger a "Delete all history" action that removes every transaction in the app, regardless of period.
+- Before any deletion runs, the app shows a confirmation dialog stating the exact scope (the period label, or "all history") and the number of transactions that will be permanently deleted.
+- The confirmation dialog requires the user to type the word "DELETE" before the delete action becomes enabled.
+- Deletion is permanent — there is no undo, recovery, or trash/archive step.
+- Categories referenced only by deleted transactions are not themselves deleted; once no transactions reference them, they become deletable under the existing rule in Category Management.
+- Dashboard, History, and Reports immediately reflect the reduced data set after deletion completes, with no manual refresh required.
+- A period (or "all history") with zero transactions has its delete action unavailable.
+
+**In-scope**
+- Deleting all transactions within one selected month
+- Deleting all transactions within one selected year
+- Deleting all transactions across all history in a single action
+- Type-to-confirm ("DELETE") safeguard before any deletion executes
+- A new Data Management screen, reached via the app's side navigation drawer (see §7)
+
+**Out-of-scope**
+- Deleting an arbitrary/custom date range not aligned to a month or year boundary
+- Deleting by category, transaction type, or amount
+- Undo, recycle bin, or recovery of deleted transactions
+- Exporting or backing up data before deletion (see Data export / Cloud backup in Future Enhancements)
+- Deleting individual categories from this screen (category deletion stays in Category Management)
+
+**Assumptions**
+- Users may want to prune old history to keep the app lean or for privacy; since there's no cloud backup in v1, deletion is the only way to reduce stored data.
+- Because the current month/year can also be deleted, the type-DELETE confirmation is the app's only safeguard against accidental data loss — there is no "protected" period.
+- This is the app's first Settings-style surface; a minimal, single-purpose screen is sufficient here — a fuller Settings section (theme, currency, etc.) is not required by this feature.
+
+---
+
+## 7. App Navigation Drawer
+
+**Goal**
+Give the user a side drawer for app-wide actions that don't belong in the primary bottom navigation — starting with Data Management and exiting the app.
+
+**Acceptance Criteria**
+- A menu icon in the app's top bar opens a side navigation drawer.
+- The drawer contains a "Data Management" entry that opens the Data Management screen (§6).
+- The drawer contains an "Exit App" entry that closes the app immediately, with no confirmation prompt.
+- Exit is implemented via Flutter's `SystemNavigator.pop()` (not a hard process kill like `dart:io`'s `exit()`), so it behaves like backing out from the root screen rather than surfacing as a crash in Android vitals.
+- The drawer closes when an entry is tapped, or when the user taps outside it or swipes it away.
+
+**In-scope**
+- The drawer itself, opened via a top-bar menu icon
+- Two entries for v1: Data Management, Exit App
+
+**Out-of-scope**
+- Moving existing navigation into the drawer — the bottom nav (Dashboard/History/Reports/Categories) and the top-bar dark-mode toggle stay exactly where they are today
+- User profile, account switching, or app info/about entries
+- Any confirmation step before exiting the app
+
+**Assumptions**
+- Two entries are enough to justify the drawer for v1; more app-wide actions may be added here later as new settings-like features are introduced.
+- "Exit App" closes the app process outright rather than just navigating to the Dashboard tab — this is distinct from the OS back button/gesture behavior.
+
+---
+
 ## Design System — Color Scheme
 
 **Mood:** Fresh & energetic, green-based primary palette.
