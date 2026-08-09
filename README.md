@@ -1,6 +1,18 @@
-# expense_tracker
+# Expense Tracker
 
-A new Flutter project.
+A fully offline personal finance app for Android, built with Flutter. All data is stored locally on-device (Hive) — no backend, no account, no sync.
+
+## Features
+
+- **Transactions** — record income and expenses with amount, category, date, and an optional note; edit or delete anytime. All amounts are in BDT (৳).
+- **Categories** — a default set of common income/expense categories out of the box, plus custom categories you can add, edit, or delete.
+- **Dashboard** — at-a-glance overall balance, this month's income/expense totals, and recent transactions.
+- **History** — full transaction history, browsable and filterable.
+- **Reports** — monthly income/expense breakdowns and trends via hand-drawn charts (donut + grouped bar).
+- **Wealth Tracking** — track assets, investments, and loans (with repayments) alongside day-to-day spending.
+- **Data Management** — manage the app's local data from a dedicated screen off the navigation drawer.
+
+See [docs/specs.md](docs/specs.md) for the full product spec and [docs/implementation-summary.md](docs/implementation-summary.md) for architectural notes.
 
 ## Commands
 
