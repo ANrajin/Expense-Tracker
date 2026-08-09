@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/screen_header.dart';
 import '../../data/models/category.dart';
 import 'categories_provider.dart';
 
+/// Reached from the navigation drawer as a pushed route, not from the bottom
+/// navigation — Wealth took the tab slot this screen used to hold (specs.md
+/// §2, §7). It therefore supplies its own Scaffold, SafeArea and back arrow,
+/// which AppShell provides for the four tab screens.
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
 
@@ -16,25 +19,58 @@ class CategoriesScreen extends ConsumerWidget {
     final expenseCategories = categories.where((c) => c.isExpense).toList();
     final colors = context.colors;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const ScreenHeader(title: 'Categories'),
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            children: [
-              _SectionLabel('Income', colors: colors),
-              for (final c in incomeCategories) _CategoryRow(category: c),
-              const SizedBox(height: 18),
-              _SectionLabel('Expense', colors: colors),
-              for (final c in expenseCategories) _CategoryRow(category: c),
-              const SizedBox(height: 18),
-              const _AddCategoryCard(),
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const _Header(),
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                children: [
+                  _SectionLabel('Income', colors: colors),
+                  for (final c in incomeCategories) _CategoryRow(category: c),
+                  const SizedBox(height: 18),
+                  _SectionLabel('Expense', colors: colors),
+                  for (final c in expenseCategories) _CategoryRow(category: c),
+                  const SizedBox(height: 18),
+                  const _AddCategoryCard(),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
+          ),
+          Text(
+            'Categories',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

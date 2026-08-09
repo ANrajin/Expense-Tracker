@@ -2,16 +2,27 @@
 
 A new Flutter project.
 
-## Getting Started
+## Commands
 
-This project is a starting point for a Flutter application.
+Run all commands from this directory (`src/`).
 
-A few resources to get you started if this is your first Flutter project:
+- Install deps: `flutter pub get`
+- Run the app on a connected device/emulator: `flutter run`
+- Static analysis (should stay clean): `flutter analyze`
+- Run the full test suite: `flutter test`
+- Run a single test file: `flutter test test/providers_test.dart`
+- Regenerate Hive adapters after changing a model in `lib/data/models/`: `dart run build_runner build --delete-conflicting-outputs`
+- Launch the reference emulator if none is running: `flutter emulators --launch Pixel_6_API_35`
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Building a release APK
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter build apk --release
+```
+
+The APK name is set in [`android/app/build.gradle.kts`](android/app/build.gradle.kts) as `ExpenseTracker-v<version>-<buildType>.apk`, where `<version>` comes from the `version:` field in `pubspec.yaml`.
+
+- Renamed output (use this one): `build/app/outputs/apk/release/ExpenseTracker-v<version>-release.apk`
+- Flutter also copies the same APK to a fixed filename (Flutter Gradle plugin behavior, not affected by the rename): `build/app/outputs/flutter-apk/app-release.apk`
+
+To bump the version before a release, edit `version: x.y.z+n` in `pubspec.yaml`.

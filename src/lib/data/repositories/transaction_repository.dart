@@ -18,6 +18,10 @@ class TransactionRepository {
 
   Future<void> delete(String id) => _box.delete(id);
 
+  /// Removes every transaction in [ids] in a single box write — the bulk
+  /// month/year/all-history deletes in Data Management.
+  Future<void> deleteMany(Iterable<String> ids) => _box.deleteAll(ids);
+
   int countByCategory(String categoryId) =>
       _box.values.where((t) => t.categoryId == categoryId).length;
 }

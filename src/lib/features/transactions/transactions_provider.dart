@@ -87,4 +87,13 @@ class TransactionsNotifier extends StateNotifier<List<Transaction>> {
     await _repo.delete(id);
     state = _repo.getAll();
   }
+
+  /// Bulk delete behind Data Management's month/year/all-history actions.
+  /// Refreshing [state] here is what makes Dashboard, History and Reports
+  /// pick up the reduced data set without a manual refresh.
+  Future<void> deleteTransactions(Iterable<String> ids) async {
+    if (ids.isEmpty) return;
+    await _repo.deleteMany(ids);
+    state = _repo.getAll();
+  }
 }

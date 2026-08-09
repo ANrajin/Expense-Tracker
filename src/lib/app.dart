@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/categories/categories_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
+import 'features/data_management/data_management_screen.dart';
 import 'features/reports/reports_screen.dart';
 import 'features/transactions/history_screen.dart';
+import 'features/wealth/wealth_screen.dart';
 
 const settingsBoxName = 'settings';
 
@@ -61,19 +64,21 @@ class ExpenseTrackerApp extends ConsumerWidget {
 class AppShell extends ConsumerWidget {
   const AppShell({super.key});
 
+  // The three lists stay index-aligned. Categories used to hold the fourth
+  // slot; it moved to the drawer when Wealth took its place (specs.md §7).
   static const _screens = [
     DashboardScreen(),
     HistoryScreen(),
     ReportsScreen(),
-    CategoriesScreen(),
+    WealthScreen(),
   ];
 
-  static const _labels = ['Dashboard', 'History', 'Reports', 'Categories'];
+  static const _labels = ['Dashboard', 'History', 'Reports', 'Wealth'];
   static const _icons = [
     Icons.grid_view_rounded,
     Icons.receipt_long_rounded,
     Icons.bar_chart_rounded,
-    Icons.category_rounded,
+    Icons.account_balance_wallet_rounded,
   ];
 
   @override
@@ -84,13 +89,21 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
+      drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 12, 0),
+              padding: const EdgeInsets.fromLTRB(6, 12, 12, 0),
               child: Row(
                 children: [
+                  Builder(
+                    builder: (context) => IconButton(
+                      tooltip: 'Menu',
+                      icon: Icon(Icons.menu_rounded, color: colors.textPrimary),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    ),
+                  ),
                   Text(
                     'Expense Tracker',
                     style: TextStyle(
@@ -129,6 +142,102 @@ class AppShell extends ConsumerWidget {
             NavigationDestination(icon: Icon(_icons[i]), label: _labels[i]),
         ],
       ),
+    );
+  }
+}
+
+/// Side drawer for app-wide actions that don't belong in the bottom nav.
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Drawer(
+      backgroundColor: colors.surface,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+              child: Text(
+                'Expense Tracker',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: colors.textPrimary,
+                ),
+              ),
+            ),
+            Divider(height: 1, color: colors.border),
+            _DrawerEntry(
+              icon: Icons.category_rounded,
+              label: 'Categories',
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
+                  MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                );
+              },
+            ),
+            _DrawerEntry(
+              icon: Icons.storage_rounded,
+              label: 'Data Management',
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
+                  MaterialPageRoute(
+                    builder: (_) => const DataManagementScreen(),
+                  ),
+                );
+              },
+            ),
+            _DrawerEntry(
+              icon: Icons.exit_to_app_rounded,
+              label: 'Exit',
+              // Pops the app off the Android back stack rather than killing the
+              // process, so it doesn't register as a crash in Android vitals.
+              onTap: () {
+                Navigator.of(context).pop();
+                SystemNavigator.pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerEntry extends StatelessWidget {
+  const _DrawerEntry({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return ListTile(
+      leading: Icon(icon, size: 20, color: colors.textPrimary),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }
